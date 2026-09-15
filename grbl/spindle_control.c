@@ -21,6 +21,58 @@
 
 #include "grbl.h"
 
+#ifdef PEN_SERVO
+
+// Mode 5: TOP=156, /1024, period 19.968 ms; high time=128 us*OCR2B.
+// OC2A stays disconnected (D11 is X2 limit). No timer ISR or shared prescaler reset.
+void spindle_init()
+{
+  TCCR2B = 0;
+  TIMSK2 = 0;
+  TCCR2A = 0;
+  ASSR &= ~(1<<AS2);
+  PORTD &= ~(1<<3);
+  TCNT2 = 0;
+  OCR2A = 156;
+  OCR2B = PEN_UP_US / 128;
+  TIFR2 = (1<<OCF2A)|(1<<OCF2B)|(1<<TOV2);
+  DDRD |= (1<<3);
+  TCCR2A = (1<<WGM20)|(1<<COM2B1);
+  TCCR2B = (1<<WGM22)|(1<<CS22)|(1<<CS21)|(1<<CS20);
+}
+
+uint8_t spindle_get_state()
+{
+  // Commanded position, not physical servo feedback.
+  return (OCR2B == PEN_DOWN_US / 128) ? SPINDLE_STATE_CW : SPINDLE_STATE_DISABLE;
+}
+
+void spindle_stop()
+{
+  OCR2B = PEN_UP_US / 128; // ISR-safe byte write. Keep pulses running to hold up.
+}
+
+void _spindle_set_state(uint8_t state)
+{
+  // A reset ISR's lift request must not be overwritten by a pending pen-down.
+  uint8_t saved_sreg = SREG;
+  cli();
+  if (!sys.abort && !(sys_rt_exec_state & EXEC_RESET)) {
+    OCR2B = (state == SPINDLE_ENABLE_CW) ? PEN_DOWN_US / 128 : PEN_UP_US / 128;
+  }
+  SREG = saved_sreg;
+  sys.report_ovr_counter = 0;
+}
+
+void _spindle_sync(uint8_t state)
+{
+  if (sys.state == STATE_CHECK_MODE) { return; }
+  protocol_buffer_synchronize();
+  _spindle_set_state(state);
+}
+
+#else // Retain upstream spindle implementation for non-servo builds.
+
 
 #ifdef VARIABLE_SPINDLE
   static float pwm_gradient; // Precalulated value to speed up rpm to PWM conversions.
@@ -288,3 +340,4 @@ void spindle_stop()
     _spindle_set_state(state);
   }
 #endif
+#endif // PEN_SERVO

@@ -64,6 +64,18 @@
 // ---------------------------------------------------------------------------------------
 // COMPILE-TIME ERROR CHECKING OF DEFINE VALUES:
 
+#ifdef PEN_SERVO
+  #if !defined(PEN_PLOTTER_XY) || defined(VARIABLE_SPINDLE) || (F_CPU != 16000000UL)
+    #error "Servo requires XY plotter, no variable spindle, and 16 MHz."
+  #endif
+  #if (PEN_UP_US < 1024) || (PEN_UP_US > 2048) || (PEN_DOWN_US < 1024) || (PEN_DOWN_US > 2048)
+    #error "Servo pulses must be within 1024..2048 us."
+  #endif
+  #if (PEN_UP_US % 128) || (PEN_DOWN_US % 128) || (PEN_UP_US == PEN_DOWN_US)
+    #error "Servo positions must be distinct multiples of 128 us."
+  #endif
+#endif
+
 #ifdef PEN_PLOTTER_XY
   // Enforce pin ownership: D3 is reserved for a future servo, not Z motion.
   #if !defined(ENABLE_DUAL_AXIS) || !defined(DUAL_AXIS_CONFIG_CNC_SHIELD_CLONE) || (DUAL_AXIS_SELECT != X_AXIS)

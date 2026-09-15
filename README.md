@@ -1,8 +1,9 @@
 # Uno pen plotter — stock GRBL baseline
 
-Step 3: GRBL 1.1h (20190825) with dual-X auto-squaring for Arduino Uno R3,
+Step 4: GRBL 1.1h (20190825) with dual-X auto-squaring for Arduino Uno R3,
 ATmega328P, 16 MHz. X1 uses X socket, X2 uses independent A socket, and Y uses
-Z socket. Servo support is not implemented. See [Step 3 details](docs/STEP3.md)
+Z socket. Hardware servo output is D3: M3 down, M5 up. See [servo details](docs/STEP4.md)
+and the [bench-test procedure](docs/BENCH-TEST.md). See [Step 3 details](docs/STEP3.md)
 for wiring, EEPROM settings, changes and actual build results.
 
 Step 2 documentation is complete: see [the shield pin map and resource review](docs/PINMAP.md)
@@ -68,7 +69,7 @@ USB serial remains on D0/D1 at 115200 baud.
 
 1. Complete: CNC Shield V3.00 connections and pin/resource table.
 2. Complete: configure and compile existing GRBL dual-X homing support.
-3. Explain timer allocation, implement pen-servo control, and compile again.
-4. Provide a staged bench-test procedure for the configured machine.
+3. Complete: Timer2 hardware pen servo compiled; physical calibration pending.
+4. Complete: bench-test procedure provided; hardware tests have not been run.
 
 Source provenance is in [docs/SOURCE.md](docs/SOURCE.md).
