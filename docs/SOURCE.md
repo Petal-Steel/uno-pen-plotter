@@ -16,6 +16,7 @@ building this project does not depend on it.
 
 PlatformIO compiles the root `grbl/*.c` files directly, including upstream main.c.
 The Arduino import example is retained for provenance but excluded from the build.
-No Arduino core, sketch wrapper, or external library is required. Stock config.h
-already selects DEFAULTS_GENERIC and CPU_MAP_ATMEGA328P. No feature defines are
-added; dual-axis remains disabled and stock variable spindle remains enabled.
+No Arduino core, sketch wrapper, or external library is required. Step 1 used
+unchanged stock settings. Step 3 adds the machine configuration and narrow fixes
+described in STEP3.md. The original source is preserved in Git milestone
+9c1761d; the working source now contains those documented changes.

@@ -325,7 +325,13 @@ void limits_go_home(uint8_t cycle_mask)
         // Homing failure condition: Safety door was opened.
         if (rt_exec & EXEC_SAFETY_DOOR) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_DOOR); }
         // Homing failure condition: Limit switch still engaged after pull-off motion
-        if (!approach && (limits_get_state() & cycle_mask)) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_PULLOFF); }
+        uint8_t release_mask = cycle_mask;
+        #ifdef ENABLE_DUAL_AXIS
+          // The second X/Y switch is bit N_AXIS, not part of cycle_mask.
+          // Both sides must release during every pull-off of the dual axis.
+          if (cycle_mask & bit(DUAL_AXIS_SELECT)) { release_mask |= bit(N_AXIS); }
+        #endif
+        if (!approach && (limits_get_state() & release_mask)) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_PULLOFF); }
         // Homing failure condition: Limit switch not found during approach.
         if (approach && (rt_exec & EXEC_CYCLE_STOP)) { system_set_exec_alarm(EXEC_ALARM_HOMING_FAIL_APPROACH); }
         if (sys_rt_exec_alarm) {

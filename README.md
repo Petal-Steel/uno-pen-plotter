@@ -1,8 +1,9 @@
 # Uno pen plotter — stock GRBL baseline
 
-Stage 1 only: official GRBL 1.1h (20190825), compiled for Arduino Uno R3,
-ATmega328P, 16 MHz. Machine-specific pin mapping, dual-X auto-squaring and
-pen-servo support have not been implemented. This is stock XYZ/spindle firmware.
+Step 3: GRBL 1.1h (20190825) with dual-X auto-squaring for Arduino Uno R3,
+ATmega328P, 16 MHz. X1 uses X socket, X2 uses independent A socket, and Y uses
+Z socket. Servo support is not implemented. See [Step 3 details](docs/STEP3.md)
+for wiring, EEPROM settings, changes and actual build results.
 
 Step 2 documentation is complete: see [the shield pin map and resource review](docs/PINMAP.md)
 for verified schematic connections, the proposed machine pin table, NC wiring,
@@ -13,15 +14,16 @@ existing dual-axis support, timer allocation, and remaining resources.
 ```text
 Uno Pen Plotter/
   platformio.ini         PlatformIO Uno build configuration
-  grbl/                  Unmodified official release source (.c/.h)
+  grbl/                  Official source with documented machine changes
     main.c               GRBL entry point
-    config.h             Stock compile-time configuration
-    cpu_map.h            Stock AVR pin assignments
+    config.h             Machine compile-time configuration
+    cpu_map.h            AVR pin assignments
     examples/            Upstream Arduino example, excluded from build
   COPYING                Upstream GPL license
   docs/
     SOURCE.md            Release tag, commit and import details
     BUILD.md             Actual baseline build results
+    STEP3.md             Dual-X configuration and build results
     UPSTREAM-README.md   Original project README
   .gitignore
   .gitattributes
@@ -59,13 +61,13 @@ PlatformIO supplies the MCU target and F_CPU from the board settings.
 - `-ffunction-sections`, `-fdata-sections`, `-Wl,--gc-sections`: discard unused sections.
 - `-lm`: AVR math library required by GRBL.
 
-No additional feature macros are required: stock config.h selects the ATmega328P
-and generic defaults. USB serial remains on D0/D1 at 115200 baud.
+Machine feature macros are in config.h; no extra command-line defines are needed.
+USB serial remains on D0/D1 at 115200 baud.
 
 ## Next stages
 
-1. Document the actual CNC Shield V3.00 connections and complete pin/resource table.
-2. Configure and compile existing GRBL dual-X homing support.
+1. Complete: CNC Shield V3.00 connections and pin/resource table.
+2. Complete: configure and compile existing GRBL dual-X homing support.
 3. Explain timer allocation, implement pen-servo control, and compile again.
 4. Provide a staged bench-test procedure for the configured machine.
 

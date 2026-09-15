@@ -64,6 +64,22 @@
 // ---------------------------------------------------------------------------------------
 // COMPILE-TIME ERROR CHECKING OF DEFINE VALUES:
 
+#ifdef PEN_PLOTTER_XY
+  // Enforce pin ownership: D3 is reserved for a future servo, not Z motion.
+  #if !defined(ENABLE_DUAL_AXIS) || !defined(DUAL_AXIS_CONFIG_CNC_SHIELD_CLONE) || (DUAL_AXIS_SELECT != X_AXIS)
+    #error "Pen plotter requires CNC Shield V3.00 dual-X configuration."
+  #endif
+  #if (STEP_MASK != (bit(2)|bit(4))) || (DIRECTION_MASK != (bit(5)|bit(7)))
+    #error "Pen plotter must leave D3 and D6 outside motion output masks."
+  #endif
+  #if (LIMIT_MASK != (bit(1)|bit(2)|bit(3))) || (DUAL_LIMIT_BIT != 3) || (DUAL_STEP_BIT != 4) || (DUAL_DIRECTION_BIT != 5)
+    #error "Pen plotter requires limits D9/D10/D11 and dual motor D12/D13."
+  #endif
+  #if (HOMING_CYCLE_0 != bit(X_AXIS)) || (HOMING_CYCLE_1 != bit(Y_AXIS)) || defined(HOMING_CYCLE_2)
+    #error "Pen plotter must home X then Y, with no Z cycle."
+  #endif
+#endif
+
 #ifndef HOMING_CYCLE_0
   #error "Required HOMING_CYCLE_0 not defined."
 #endif

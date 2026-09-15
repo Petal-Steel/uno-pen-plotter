@@ -1,8 +1,8 @@
 # CNC Shield V3.00 pin and resource review (Step 2)
 
-Status: documentation only. Firmware and platformio.ini still match the Step 1
-baseline. The proposed assignments below are for subsequent implementation;
-do not use the stock firmware to operate this proposed wiring.
+This records the Step 2 design review. Step 3 has now implemented the motor and
+limit assignments; see STEP3.md for current behavior. Servo proposals remain
+unimplemented. Do not use the stock Step 1 firmware with this machine wiring.
 
 ## Evidence and revision boundary
 
