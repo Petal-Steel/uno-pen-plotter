@@ -4,6 +4,10 @@ Stage 1 only: official GRBL 1.1h (20190825), compiled for Arduino Uno R3,
 ATmega328P, 16 MHz. Machine-specific pin mapping, dual-X auto-squaring and
 pen-servo support have not been implemented. This is stock XYZ/spindle firmware.
 
+Step 2 documentation is complete: see [the shield pin map and resource review](docs/PINMAP.md)
+for verified schematic connections, the proposed machine pin table, NC wiring,
+existing dual-axis support, timer allocation, and remaining resources.
+
 ## Project layout
 
 ```text
