@@ -99,7 +99,7 @@ an attached gantry. Recheck real switch travel and $27 before coupling motors.
 ## 5. Pen waveform and calibration
 
 Verify D3/Y.STEP relative to GND with an oscilloscope/logic analyzer before
-connecting the servo: approximately 19.968 ms period, 1.024 ms up, 1.920 ms down.
+connecting the servo: approximately 19.968 ms period, 1.024 ms up, 1.152 ms down.
 Connect external regulated 5V servo power and common grounds; leave linkage off.
 After unlocking if needed, send:
 

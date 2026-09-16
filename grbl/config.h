@@ -39,7 +39,7 @@
 #define PEN_PLOTTER_XY // No physical Z outputs; reserve D3 for the later servo stage.
 #define PEN_SERVO // Timer2 hardware OC2B on D3; no servo ISR.
 #define PEN_UP_US 1024 // Calibrate unloaded; multiples of 128 us only.
-#define PEN_DOWN_US 1920
+#define PEN_DOWN_US 1152 // One count from UP: ~23 degrees if 1000 us spans 180 degrees.
 #define PEN_HOMING_SETTLE_MS 300
 
 // Serial baud rate

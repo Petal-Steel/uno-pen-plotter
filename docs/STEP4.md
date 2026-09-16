@@ -15,7 +15,7 @@ mode 5 with prescaler 1024, OCR2A=156 and non-inverting OC2B on D3. Period is
 OC2A is disconnected, leaving D11 as the X2 input despite OCR2A defining TOP.
 The shared Timer0/1 prescaler is never reset by servo initialization.
 
-PEN_UP_US=1024 and PEN_DOWN_US=1920 are configurable in config.h. Compile checks
+PEN_UP_US=1024 and PEN_DOWN_US=1152 are configurable in config.h. Compile checks
 require distinct multiples of 128 us from 1024 through 2048. Widths are not
 angles; calibrate without linkage first. Swap the values if the mechanism moves
 the wrong way. This resolution may be insufficient for some mechanisms; verify
