@@ -628,6 +628,10 @@ uint8_t gc_execute_line(char *line)
           } else { // == NON_MODAL_GO_HOME_1
             if (!settings_read_coord_data(SETTING_INDEX_G30,gc_block.values.ijk)) { FAIL(STATUS_SETTING_READ_FAIL); }
           }
+          #ifdef PEN_PLOTTER_XY
+            // Old EEPROM can contain a nonzero Z home. Do not plan phantom Z travel.
+            gc_block.values.ijk[Z_AXIS] = gc_state.position[Z_AXIS];
+          #endif
           if (axis_words) {
             // Move only the axes specified in secondary move.
             for (idx=0; idx<N_AXIS; idx++) {

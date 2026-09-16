@@ -1,5 +1,7 @@
 # Uno pen plotter — stock GRBL baseline
 
+Latest verification: [code review, fixes and clean-build results](docs/CODE-REVIEW.md).
+
 Step 4: GRBL 1.1h (20190825) with dual-X auto-squaring for Arduino Uno R3,
 ATmega328P, 16 MHz. X1 uses X socket, X2 uses independent A socket, and Y uses
 Z socket. Hardware servo output is D3: M3 down, M5 up. See [servo details](docs/STEP4.md)

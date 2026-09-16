@@ -71,7 +71,8 @@ step widths and DIR setup time against the installed driver's requirements.
 
 ## 4. Independent X homing stops and pull-off
 
-Keep motors uncoupled. All switches start released. Use `$H`; X should seek in
+Keep motors uncoupled. All switches start released. An already-active switch
+now blocks homing with ALARM:1; release it before retrying. Use `$H`; X should seek in
 its configured negative direction. Operate the negative switches by hand:
 
 1. Trigger X1 first. X1 must stop stepping; X2 must continue.

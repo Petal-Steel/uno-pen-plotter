@@ -209,7 +209,10 @@ void mc_homing_cycle(uint8_t cycle_mask)
     spindle_stop();
     gc_state.modal.spindle = SPINDLE_DISABLE; // Next M3 must not be skipped as redundant.
     delay_ms(PEN_HOMING_SETTLE_MS); // No motion yet; Timer2 holds pen up throughout.
-    if (sys.abort || (sys_rt_exec_state & EXEC_RESET)) { return; }
+    if (sys.abort || (sys_rt_exec_state & EXEC_RESET)) {
+      protocol_execute_realtime(); // Set sys.abort before caller considers startup scripts.
+      return;
+    }
   #endif
   // Check and abort homing cycle, if hard limits are already enabled. Helps prevent problems
   // with machines with limits wired on both ends of travel to one limit pin.
