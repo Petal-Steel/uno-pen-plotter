@@ -13,6 +13,8 @@ independent dual-X homing, and Timer2 pen-servo control. Latest Uno build:
 29,572 bytes flash, 1,553 bytes static RAM. Pen up/down: 1152/1024 us.
 Hard-limit instantaneous state checking is enabled (not timed debounce).
 See the [machine settings reference](docs/MACHINE-SETTINGS.md).
+For the machine overview, operating sequence, and intended Jetson supervisor
+behavior, read [Machine Context and Control Procedure](docs/MACHINE-CONTEXT-AND-CONTROL-PROCEDURE.md).
 
 Earlier verification: [code review, fixes and clean-build results](docs/CODE-REVIEW.md).
 

@@ -22,6 +22,9 @@ The future auxiliary slate-cleaning stepper is outside this completed scope.
 
 ## Retained commissioning/retest procedure
 
+For routine operation and intended Jetson supervision, see
+[Machine Context and Control Procedure](MACHINE-CONTEXT-AND-CONTROL-PROCEDURE.md).
+
 The instructions below are retained for rebuilding or retesting the machine;
 they are not outstanding tasks. Initial-test settings below are not instructions
 to overwrite the commissioned settings ($20=1 and $21=1).
