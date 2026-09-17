@@ -1,5 +1,13 @@
 # Uno pen plotter — stock GRBL baseline
 
+## Status: commissioned and fully functional
+
+On 2026-09-17, the machine owner confirmed all required pinout/wiring work and
+all bench testing are complete. X1/X2/Y motion, independent dual-X squaring,
+limits, homing, pen servo and positive XY coordinates are operational.
+See the [commissioning sign-off](docs/BENCH-TEST.md). The future auxiliary
+slate-cleaning stepper is not part of the implemented machine.
+
 Current firmware uses [positive XY machine coordinates](docs/POSITIVE-XY.md),
 independent dual-X homing, and Timer2 pen-servo control. Latest Uno build:
 29,572 bytes flash, 1,553 bytes static RAM. Pen up/down: 1152/1024 us.

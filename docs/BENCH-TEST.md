@@ -1,6 +1,31 @@
 # Bench test: X1, X2, Y and pen
 
-These tests are pending; compilation is not proof of hardware operation.
+## Commissioning complete — owner confirmation, 2026-09-17
+
+The machine owner confirms that all required pinout/wiring work and all bench
+testing have been completed, and the current pen plotter is fully functional.
+This records owner-reported hardware acceptance, not an automated test result.
+
+- X1/X2/Y motion and calibration: complete.
+- Independent dual-X homing/auto-squaring and pull-off: complete.
+- All six NC switches, hard limits and soft limits: complete.
+- D3/Timer2 pen servo (M3 down, M5 up): complete.
+- Positive XY machine coordinates and UGS visualizer alignment: complete.
+
+Installed motor routing: X1 on X, X2 on independent A (D12/D13), Y on Z;
+the shield Y driver socket remains empty. Limit inputs are D9/X1, D10/Y,
+D11/X2, each with a permanent 10 nF capacitor to GND. Servo up/down pulse
+widths are 1152/1024 us. See [settings reference](MACHINE-SETTINGS.md) and
+[positive-coordinate details](POSITIVE-XY.md).
+
+The future auxiliary slate-cleaning stepper is outside this completed scope.
+
+## Retained commissioning/retest procedure
+
+The instructions below are retained for rebuilding or retesting the machine;
+they are not outstanding tasks. Initial-test settings below are not instructions
+to overwrite the commissioned settings ($20=1 and $21=1).
+
 Perform initial motor tests mechanically disconnected from the gantry. Do not
 plug/unplug motors or change drivers/jumpers while powered. Set driver current
 limits for the actual motor and driver before motion. Confirm the PINMAP.md

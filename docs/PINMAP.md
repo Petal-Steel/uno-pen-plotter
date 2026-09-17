@@ -1,8 +1,13 @@
 # CNC Shield V3.00 pin and resource review (Step 2)
 
-This records the Step 2 design review. Step 3 has now implemented the motor and
-limit assignments; see STEP3.md for current behavior. Servo proposals remain
-unimplemented. Do not use the stock Step 1 firmware with this machine wiring.
+Commissioning status (2026-09-17): the owner confirms all required pinout/wiring
+work and bench testing are complete and the machine is fully functional.
+Motor, limit and D3/Timer2 servo assignments are implemented. See
+[completed bench-test status](BENCH-TEST.md). Do not use the stock Step 1 firmware
+with this machine wiring.
+
+The design-review discussion below is retained as historical context; proposed
+alternatives are not additional wiring changes required on the completed machine.
 
 ## Evidence and revision boundary
 
@@ -17,7 +22,8 @@ The [archived original Protoneer article](https://www.optimusdigital.ro/index.ph
 identifies V3.00's independent D12/D13 option and doubled limit connectors.
 The [archived jumper photo](https://courses.ideate.cmu.edu/16-375/f2018/text/_images/A-axis-drivers.jpg)
 shows the D12/D13 selection. Before wiring, verify the specific board by the
-unpowered continuity checks below. No physical board measurements have been made.
+unpowered continuity checks below when commissioning another board. This original
+review was schematic-based; completed hardware testing is now owner-confirmed.
 
 MCU pin names follow the [Arduino Uno R3 pinout](https://docs.arduino.cc/resources/pinouts/A000066-full-pinout.pdf).
 Timer behavior follows the [ATmega328P datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf),
@@ -26,7 +32,7 @@ vendored release, not current upstream master.
 
 ## Complete Uno pin map
 
-Stock means GRBL 1.1h with VARIABLE_SPINDLE enabled, as currently compiled.
+Stock means upstream GRBL 1.1h with VARIABLE_SPINDLE enabled, not this custom build.
 OC = hardware output compare. Pin-change interrupts are available on all listed
 GPIO; the interrupt column names the resources relevant to this design.
 An available alternate function does not mean its timer is free.
