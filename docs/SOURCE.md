@@ -11,8 +11,8 @@
 
 Source is vendored so subsequent machine changes can be reviewed in this project's
 Git history. It is not a floating dependency or a fork downloaded from a third party.
-The sibling `.grbl-1.1h-upstream/` checkout is only an import/reference copy;
-building this project does not depend on it.
+The original import used a separate upstream reference checkout. That checkout
+is not required: this repository contains the source needed to build the firmware.
 
 PlatformIO compiles the root `grbl/*.c` files directly, including upstream main.c.
 The Arduino import example is retained for provenance but excluded from the build.

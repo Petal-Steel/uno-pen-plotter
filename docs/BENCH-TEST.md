@@ -41,11 +41,15 @@ Wire each pair of NC switches in series to its input and GND. Initially leave
 servo linkage off and servo power disconnected. Connect USB, identify the Uno
 port, and upload only after checking the configuration:
 
-```powershell
-pio run -e uno -t upload --upload-port COMn
+```text
+pio device list
+pio run -e uno -t upload --upload-port PORT
 ```
 
-Replace COMn with the actual Uno port; do not guess another device's port.
+Replace PORT with the actual Uno port reported by `pio device list`; it is a
+placeholder, not a literal port name. Examples include COM4 on Windows,
+/dev/ttyACM0 on Linux, or /dev/cu.usbmodem... on macOS. Identify your own device.
+See [SETUP.md](SETUP.md) for host setup and USB access.
 Connect a GRBL sender at 115200 baud, one serial application at a time.
 Inspect `$$`, `$#`, `$N` (startup blocks) and `$I`. Remove unexpected automatic
 startup motion before commissioning. Preserve needed settings before edits.

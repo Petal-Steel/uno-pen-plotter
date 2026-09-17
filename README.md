@@ -1,4 +1,4 @@
-# Uno pen plotter — stock GRBL baseline
+# Uno Pen Plotter - custom GRBL firmware
 
 ## Status: commissioned and fully functional
 
@@ -54,15 +54,13 @@ Uno Pen Plotter/
 Open this directory in VS Code with the PlatformIO IDE extension. Use
 PlatformIO: Build, or run in a PlatformIO terminal:
 
-```powershell
+```text
 pio run -e uno
 ```
 
-On this computer the explicit executable is:
-
-```powershell
-& 'C:\Users\willi\.platformio\penv\Scripts\pio.exe' run -e uno
-```
+For installation, cloning, serial-port selection and host-platform limitations,
+see [portable setup instructions](docs/SETUP.md). All commands run from the
+project root containing platformio.ini; no particular username or folder is required.
 
 The first build downloads the pinned Atmel AVR platform and its toolchain.
 Outputs are `.pio/build/uno/firmware.hex` and `firmware.elf`.
@@ -83,11 +81,11 @@ PlatformIO supplies the MCU target and F_CPU from the board settings.
 Machine feature macros are in config.h; no extra command-line defines are needed.
 USB serial remains on D0/D1 at 115200 baud.
 
-## Next stages
+## Completed stages
 
 1. Complete: CNC Shield V3.00 connections and pin/resource table.
 2. Complete: configure and compile existing GRBL dual-X homing support.
-3. Complete: Timer2 hardware pen servo compiled; physical calibration pending.
-4. Complete: bench-test procedure provided; hardware tests have not been run.
+3. Complete: Timer2 hardware pen servo implemented and commissioned.
+4. Complete: owner-confirmed hardware bench testing; procedure retained for retesting.
 
 Source provenance is in [docs/SOURCE.md](docs/SOURCE.md).

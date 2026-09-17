@@ -1,5 +1,9 @@
 # Code review and clean build
 
+Historical review of the earlier firmware revision. For current build size and
+commissioning status, see the [README](../README.md) and [bench tests](BENCH-TEST.md).
+For host setup, see [SETUP.md](SETUP.md).
+
 Reviewed current custom changes against the stock GRBL baseline, including port
 ownership, Timer2 setup, reset paths, NC limit handling and coordinate handling.
 
@@ -32,11 +36,17 @@ ownership, Timer2 setup, reset paths, NC limit handling and coordinate handling.
   Timer1 COMPA and Timer0 overflow handlers remain present.
 - git diff --check passes.
 
-Run regression checks from the project directory:
+Run regression checks from the project directory on Windows with Python 3 and
+the PlatformIO AVR toolchain installed:
 
-```powershell
-& 'C:\Users\willi\.platformio\penv\Scripts\python.exe' tests/run_review.py
+```text
+python tests/run_review.py
 ```
+
+The current runner locates tools under the current user's default `.platformio`
+directory and calls `.exe` executables. It is not yet portable to Linux/macOS or
+custom PlatformIO package locations. See SETUP.md for these limitations; removing
+personal paths from this guide does not change the runner's supported platforms.
 
 The suite uses bundled avr-gcc/avr-gdb and builds into .pio/review. It does not
 upload. Firmware builds exclude tests because src_dir is grbl. The instruction
@@ -52,4 +62,5 @@ Changing || to | would change the EEPROM checksum format and potentially invalid
 stored settings. Left unchanged deliberately; this review does not migrate EEPROM
 or claim stronger error detection than stock GRBL.
 
-No firmware was uploaded and no physical tests were performed.
+No firmware was uploaded and no physical tests were performed during this review.
+Subsequent owner-confirmed hardware commissioning is recorded in BENCH-TEST.md.
