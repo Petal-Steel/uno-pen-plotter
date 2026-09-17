@@ -38,8 +38,8 @@
 #define CPU_MAP_ATMEGA328P // Arduino Uno CPU
 #define PEN_PLOTTER_XY // No physical Z outputs; reserve D3 for the later servo stage.
 #define PEN_SERVO // Timer2 hardware OC2B on D3; no servo ISR.
-#define PEN_UP_US 1024 // Calibrate unloaded; multiples of 128 us only.
-#define PEN_DOWN_US 1152 // One count from UP: ~23 degrees if 1000 us spans 180 degrees.
+#define PEN_UP_US 1152 // Calibrate unloaded; multiples of 128 us only.
+#define PEN_DOWN_US 1024 // One count from UP: ~23 degrees if 1000 us spans 180 degrees.
 #define PEN_HOMING_SETTLE_MS 300
 
 // Serial baud rate
@@ -488,7 +488,7 @@
 // that the switches don't bounce, we recommend enabling this option. This will help prevent
 // triggering a hard limit when the machine disengages from the switch.
 // NOTE: This option has no effect if SOFTWARE_DEBOUNCE is enabled.
-// #define HARD_LIMIT_FORCE_STATE_CHECK // Default disabled. Uncomment to enable.
+#define HARD_LIMIT_FORCE_STATE_CHECK // Confirm an active input in the ISR; no timed debounce.
 
 // Adjusts homing cycle search and locate scalars. These are the multipliers used by Grbl's
 // homing cycle to ensure the limit switches are engaged and cleared through each phase of

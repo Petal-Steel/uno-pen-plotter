@@ -1,0 +1,71 @@
+﻿diff --git a/grbl/limits.c b/grbl/limits.c
+index 49e93ec..7a2df7d 100644
+--- a/grbl/limits.c
++++ b/grbl/limits.c
+@@ -379,6 +379,18 @@ void limits_go_home(uint8_t cycle_mask)
+   for (idx=0; idx<N_AXIS; idx++) {
+     // NOTE: settings.max_travel[] is stored as a negative value.
+     if (cycle_mask & bit(idx)) {
++      #ifdef PEN_PLOTTER_XY
++        // XY machine space is [0, travel]; preserve all physical homing moves.
++        // Negative-end homing parks at pull-off, positive-end at travel-pull-off.
++        if (idx == X_AXIS || idx == Y_AXIS) {
++          float home_position = settings.homing_pulloff;
++          if (bit_isfalse(settings.homing_dir_mask,bit(idx))) {
++            home_position = -settings.max_travel[idx]-settings.homing_pulloff;
++          }
++          sys_position[idx] = lround(home_position*settings.steps_per_mm[idx]);
++          continue;
++        }
++      #endif
+       #ifdef HOMING_FORCE_SET_ORIGIN
+         set_axis_position = 0;
+       #else
+diff --git a/grbl/system.c b/grbl/system.c
+index 55e6c40..920cb3c 100644
+--- a/grbl/system.c
++++ b/grbl/system.c
+@@ -335,6 +335,13 @@ uint8_t system_check_travel_limits(float *target)
+ {
+   uint8_t idx;
+   for (idx=0; idx<N_AXIS; idx++) {
++    #ifdef PEN_PLOTTER_XY
++      // Match XY's positive machine space; max_travel remains stored negative.
++      if (idx == X_AXIS || idx == Y_AXIS) {
++        if (target[idx] < 0 || target[idx] > -settings.max_travel[idx]) { return(true); }
++        continue;
++      }
++    #endif
+     #ifdef HOMING_FORCE_SET_ORIGIN
+       // When homing forced set origin is enabled, soft limits checks need to account for directionality.
+       // NOTE: max_travel is stored as negative
+diff --git a/tests/review.c b/tests/review.c
+index edb4420..dd1423f 100644
+--- a/tests/review.c
++++ b/tests/review.c
+@@ -56,6 +56,25 @@ int main(void) {
+   CHECK(RUN("G19")==STATUS_GCODE_UNSUPPORTED_COMMAND);
+   CHECK(RUN("G28")==STATUS_OK && last_target[Z_AXIS]==0);
+   CHECK(RUN("G30")==STATUS_OK && last_target[Z_AXIS]==0);
++  // Positive XY machine bounds, including both ends and independent overtravel.
++  settings.max_travel[X_AXIS]=-800; settings.max_travel[Y_AXIS]=-755;
++  settings.max_travel[Z_AXIS]=-200;
++  float target[N_AXIS]={0};
++  CHECK(!system_check_travel_limits(target));
++  target[X_AXIS]=800; target[Y_AXIS]=755;
++  CHECK(!system_check_travel_limits(target));
++  target[X_AXIS]=800.1; CHECK(system_check_travel_limits(target));
++  target[X_AXIS]=-0.1; CHECK(system_check_travel_limits(target));
++  target[X_AXIS]=4; target[Y_AXIS]=755.1; CHECK(system_check_travel_limits(target));
++  target[Y_AXIS]=-0.1; CHECK(system_check_travel_limits(target));
++  target[Y_AXIS]=4; CHECK(!system_check_travel_limits(target));
++  // G53 bypasses work/G92 offsets naturally; ordinary G54 still applies them.
++  gc_state.coord_system[X_AXIS]=10; gc_state.coord_system[Y_AXIS]=20;
++  gc_state.coord_offset[X_AXIS]=2; gc_state.coord_offset[Y_AXIS]=3;
++  CHECK(RUN("G21G90G53G0X4Y4")==STATUS_OK);
++  CHECK(last_target[X_AXIS]==4 && last_target[Y_AXIS]==4);
++  CHECK(RUN("G0X4Y4")==STATUS_OK);
++  CHECK(last_target[X_AXIS]==16 && last_target[Y_AXIS]==27);
+   // PINB is plain simulated memory here: test real limit inversion logic.
+   settings.flags=BITFLAG_INVERT_LIMIT_PINS; PINB=0;
+   CHECK(limits_get_state()==0);

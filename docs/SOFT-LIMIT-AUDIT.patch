@@ -1,0 +1,48 @@
+--- a/tests/review.c
++++ b/tests/review.c
+@@ -30,6 +30,16 @@
+ // Flash literals avoid the simple simulator's SRAM .data loading limitations.
+ #define RUN(s) ({ char line[32]; strcpy_P(line, PSTR(s)); gc_execute_line(line); })
+ #define CHECK(x) do { if (!(x)) { failure_line=__LINE__; goto done; } } while (0)
++// Exercise the real alarm path after the parser's captured machine target.
++// mc_line is wrapped to prevent simulated physical motion.
++#define CHECK_LIMIT_COMMAND(s, rejected) do { \
++  sys.state=STATE_IDLE; sys.abort=0; sys.soft_limit=0; \
++  sys_rt_exec_state=0; sys_rt_exec_alarm=0; \
++  CHECK(RUN(s)==STATUS_OK); \
++  limits_soft_check(last_target); \
++  CHECK(sys.soft_limit==(rejected)); \
++  CHECK(sys_rt_exec_alarm==((rejected) ? EXEC_ALARM_SOFT_LIMIT : 0)); \
++} while (0)
+ int main(void) {
+   // Do not enable interrupts: simulator lacks the board's peripheral behavior.
+   spindle_init();
+@@ -75,6 +85,28 @@
+   CHECK(last_target[X_AXIS]==4 && last_target[Y_AXIS]==4);
+   CHECK(RUN("G0X4Y4")==STATUS_OK);
+   CHECK(last_target[X_AXIS]==16 && last_target[Y_AXIS]==27);
++  settings.homing_dir_mask=3;
++  settings.flags=BITFLAG_SOFT_LIMIT_ENABLE;
++  CHECK_LIMIT_COMMAND("G53G0X100Y100", false);
++  CHECK_LIMIT_COMMAND("G53G0X400Y300", false);
++  CHECK_LIMIT_COMMAND("G53G0X790Y745", false);
++  CHECK_LIMIT_COMMAND("G53G0X-10", true);
++  CHECK_LIMIT_COMMAND("G53G0X4Y4", false);
++  CHECK_LIMIT_COMMAND("G53G0Y-10", true);
++  CHECK_LIMIT_COMMAND("G53G0X4Y4", false);
++  CHECK_LIMIT_COMMAND("G53G0X810", true);
++  CHECK_LIMIT_COMMAND("G53G0X4Y4", false);
++  CHECK_LIMIT_COMMAND("G53G0Y765", true);
++  CHECK_LIMIT_COMMAND("G53G0X0Y0", false);
++  CHECK_LIMIT_COMMAND("G53G0X800Y755", false);
++  CHECK_LIMIT_COMMAND("G54G0X4Y4", false); // Machine 16,27 with the offsets above.
++  CHECK_LIMIT_COMMAND("G54G0X-13Y4", true); // Machine X=-1.
++  CHECK_LIMIT_COMMAND("G54G0X789Y4", true); // Machine X=801.
++  target[X_AXIS]=4; target[Y_AXIS]=4;
++  target[Z_AXIS]=-200; CHECK(!system_check_travel_limits(target));
++  target[Z_AXIS]=0.1; CHECK(system_check_travel_limits(target));
++  target[Z_AXIS]=-200.1; CHECK(system_check_travel_limits(target));
++  sys.abort=0; sys.soft_limit=0; sys_rt_exec_state=0; sys_rt_exec_alarm=0;
+   // PINB is plain simulated memory here: test real limit inversion logic.
+   settings.flags=BITFLAG_INVERT_LIMIT_PINS; PINB=0;
+   CHECK(limits_get_state()==0);

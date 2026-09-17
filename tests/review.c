@@ -30,6 +30,16 @@ __attribute__((noinline)) void tests_finished(void) { asm volatile("nop"); }
 // Flash literals avoid the simple simulator's SRAM .data loading limitations.
 #define RUN(s) ({ char line[32]; strcpy_P(line, PSTR(s)); gc_execute_line(line); })
 #define CHECK(x) do { if (!(x)) { failure_line=__LINE__; goto done; } } while (0)
+// Exercise the real alarm path after the parser's captured machine target.
+// mc_line is wrapped to prevent simulated physical motion.
+#define CHECK_LIMIT_COMMAND(s, rejected) do { \
+  sys.state=STATE_IDLE; sys.abort=0; sys.soft_limit=0; \
+  sys_rt_exec_state=0; sys_rt_exec_alarm=0; \
+  CHECK(RUN(s)==STATUS_OK); \
+  limits_soft_check(last_target); \
+  CHECK(sys.soft_limit==(rejected)); \
+  CHECK(sys_rt_exec_alarm==((rejected) ? EXEC_ALARM_SOFT_LIMIT : 0)); \
+} while (0)
 int main(void) {
   // Do not enable interrupts: simulator lacks the board's peripheral behavior.
   spindle_init();
@@ -56,6 +66,47 @@ int main(void) {
   CHECK(RUN("G19")==STATUS_GCODE_UNSUPPORTED_COMMAND);
   CHECK(RUN("G28")==STATUS_OK && last_target[Z_AXIS]==0);
   CHECK(RUN("G30")==STATUS_OK && last_target[Z_AXIS]==0);
+  // Positive XY machine bounds, including both ends and independent overtravel.
+  settings.max_travel[X_AXIS]=-800; settings.max_travel[Y_AXIS]=-755;
+  settings.max_travel[Z_AXIS]=-200;
+  float target[N_AXIS]={0};
+  CHECK(!system_check_travel_limits(target));
+  target[X_AXIS]=800; target[Y_AXIS]=755;
+  CHECK(!system_check_travel_limits(target));
+  target[X_AXIS]=800.1; CHECK(system_check_travel_limits(target));
+  target[X_AXIS]=-0.1; CHECK(system_check_travel_limits(target));
+  target[X_AXIS]=4; target[Y_AXIS]=755.1; CHECK(system_check_travel_limits(target));
+  target[Y_AXIS]=-0.1; CHECK(system_check_travel_limits(target));
+  target[Y_AXIS]=4; CHECK(!system_check_travel_limits(target));
+  // G53 bypasses work/G92 offsets naturally; ordinary G54 still applies them.
+  gc_state.coord_system[X_AXIS]=10; gc_state.coord_system[Y_AXIS]=20;
+  gc_state.coord_offset[X_AXIS]=2; gc_state.coord_offset[Y_AXIS]=3;
+  CHECK(RUN("G21G90G53G0X4Y4")==STATUS_OK);
+  CHECK(last_target[X_AXIS]==4 && last_target[Y_AXIS]==4);
+  CHECK(RUN("G0X4Y4")==STATUS_OK);
+  CHECK(last_target[X_AXIS]==16 && last_target[Y_AXIS]==27);
+  settings.homing_dir_mask=3;
+  settings.flags=BITFLAG_SOFT_LIMIT_ENABLE;
+  CHECK_LIMIT_COMMAND("G53G0X100Y100", false);
+  CHECK_LIMIT_COMMAND("G53G0X400Y300", false);
+  CHECK_LIMIT_COMMAND("G53G0X790Y745", false);
+  CHECK_LIMIT_COMMAND("G53G0X-10", true);
+  CHECK_LIMIT_COMMAND("G53G0X4Y4", false);
+  CHECK_LIMIT_COMMAND("G53G0Y-10", true);
+  CHECK_LIMIT_COMMAND("G53G0X4Y4", false);
+  CHECK_LIMIT_COMMAND("G53G0X810", true);
+  CHECK_LIMIT_COMMAND("G53G0X4Y4", false);
+  CHECK_LIMIT_COMMAND("G53G0Y765", true);
+  CHECK_LIMIT_COMMAND("G53G0X0Y0", false);
+  CHECK_LIMIT_COMMAND("G53G0X800Y755", false);
+  CHECK_LIMIT_COMMAND("G54G0X4Y4", false); // Machine 16,27 with the offsets above.
+  CHECK_LIMIT_COMMAND("G54G0X-13Y4", true); // Machine X=-1.
+  CHECK_LIMIT_COMMAND("G54G0X789Y4", true); // Machine X=801.
+  target[X_AXIS]=4; target[Y_AXIS]=4;
+  target[Z_AXIS]=-200; CHECK(!system_check_travel_limits(target));
+  target[Z_AXIS]=0.1; CHECK(system_check_travel_limits(target));
+  target[Z_AXIS]=-200.1; CHECK(system_check_travel_limits(target));
+  sys.abort=0; sys.soft_limit=0; sys_rt_exec_state=0; sys_rt_exec_alarm=0;
   // PINB is plain simulated memory here: test real limit inversion logic.
   settings.flags=BITFLAG_INVERT_LIMIT_PINS; PINB=0;
   CHECK(limits_get_state()==0);

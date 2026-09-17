@@ -379,6 +379,18 @@ void limits_go_home(uint8_t cycle_mask)
   for (idx=0; idx<N_AXIS; idx++) {
     // NOTE: settings.max_travel[] is stored as a negative value.
     if (cycle_mask & bit(idx)) {
+      #ifdef PEN_PLOTTER_XY
+        // XY machine space is [0, travel]; preserve all physical homing moves.
+        // Negative-end homing parks at pull-off, positive-end at travel-pull-off.
+        if (idx == X_AXIS || idx == Y_AXIS) {
+          float home_position = settings.homing_pulloff;
+          if (bit_isfalse(settings.homing_dir_mask,bit(idx))) {
+            home_position = -settings.max_travel[idx]-settings.homing_pulloff;
+          }
+          sys_position[idx] = lround(home_position*settings.steps_per_mm[idx]);
+          continue;
+        }
+      #endif
       #ifdef HOMING_FORCE_SET_ORIGIN
         set_axis_position = 0;
       #else

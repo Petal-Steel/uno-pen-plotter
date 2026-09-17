@@ -1,6 +1,12 @@
 # Uno pen plotter — stock GRBL baseline
 
-Latest verification: [code review, fixes and clean-build results](docs/CODE-REVIEW.md).
+Current firmware uses [positive XY machine coordinates](docs/POSITIVE-XY.md),
+independent dual-X homing, and Timer2 pen-servo control. Latest Uno build:
+29,572 bytes flash, 1,553 bytes static RAM. Pen up/down: 1152/1024 us.
+Hard-limit instantaneous state checking is enabled (not timed debounce).
+See the [machine settings reference](docs/MACHINE-SETTINGS.md).
+
+Earlier verification: [code review, fixes and clean-build results](docs/CODE-REVIEW.md).
 
 Step 4: GRBL 1.1h (20190825) with dual-X auto-squaring for Arduino Uno R3,
 ATmega328P, 16 MHz. X1 uses X socket, X2 uses independent A socket, and Y uses
