@@ -1,5 +1,35 @@
 # Proven Post Processing Sample
 
+## Forced-XY candidate revision
+
+The separately supplied [forced-XY post](grbl_pen_plotter_return_home_forced_xy.cps)
+was added on 2026-09-18, unchanged from the supplied file. The original
+[proven post](grbl_pen_plotter_return_home.cps) remains available unchanged.
+
+Source comparison found only a comment update and the following addition inside
+`writeProgramEnd()`, immediately before `forceFeed()` and the G53 parking line:
+
+```javascript
+xOutput.reset();
+yOutput.reset();
+```
+
+This resets the coordinate output caches so both X4 and Y4 are emitted even if
+the last work-coordinate move used the same numeric values. Pen-up/dwell, feed
+2000, M30 and all other code are unchanged. `gMotionModal` is not reset, so G1
+may still be omitted if already active; that is valid modal G-code. The existing
+millimeter-only parking assumption remains.
+
+Status: source-reviewed candidate, not yet reported as Fusion-posted or
+bench-tested. Validate generated endings for paths terminating at work X4,
+work Y4, and work X4/Y4 with nonzero G54 offsets. Verify both X4 and Y4 appear
+on the final G53 line, G1 is explicit or already active, and M5 plus the configured
+lift dwell precede parking. Then verify physical parking with clearance before
+promoting this revision to the proven reference. No firmware update is required.
+
+The remaining sections describe the original owner-proven reference; its
+omitted-axis limitation is addressed by this candidate only.
+
 ## Configuration responsibilities and evidence
 
 This is an owner-reported working Fusion post-processing example, added 2026-09-18.
