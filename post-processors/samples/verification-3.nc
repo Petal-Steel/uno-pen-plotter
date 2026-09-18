@@ -1,0 +1,21 @@
+(Verification 3)
+(T1 D=0 CR=0 - ZMIN=0 - plasma cutter)
+G90 G94
+G17
+G21
+
+(2D Profile1)
+T1
+G17 G90 G94
+G54
+G0 X14 Y14
+M3
+G1 X4 F5000
+Y4
+M5
+G4 P0.2
+
+M5
+G4 P0.2
+G53 G1 X4 Y4 F2000
+M30

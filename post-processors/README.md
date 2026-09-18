@@ -298,7 +298,14 @@ No Z-axis motion is required for pen control.
 
 - [Current Fusion post](grbl_pen_plotter_final.cps): the maintained revision with explicit parking and pre-rapid pen lifts. Older CPS files were removed from the current tree to avoid selection mistakes; Git retains their history.
 - This document: adapted from the supplied `PROVEN_POST_PROCESSING_SAMPLE.md`.
-- No generated `.nc` file was supplied with this addition. The snippets here are illustrative, not a captured execution log.
+- [Verification 3 G-code](samples/verification-3.nc): owner-supplied Fusion output,
+  preserved as provided. It demonstrates repeated M5/dwell blocks and explicit
+  `G53 G1 X4 Y4 F2000` parking. This sample predates the pre-rapid pen-lift addition
+  in commit `32679c2`, so it has no M5/dwell before its initial G0. The pen must
+  already be raised before running this historical sample. Home first and verify
+  G54 and clearance; these are work-coordinate drawing moves followed by machine
+  coordinate parking. Physical execution of this specific sample has not been
+  confirmed. Regenerating with the current post should add the initial lift/dwell.
 
 The post retains its Autodesk copyright/legal notices. Its inclusion does not
 relicense it under the GRBL firmware's GPL license.
