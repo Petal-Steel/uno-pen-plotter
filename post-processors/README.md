@@ -4,8 +4,8 @@
 
 [grbl_pen_plotter_final.cps](grbl_pen_plotter_final.cps) was supplied on
 2026-09-18 and subsequently adjusted at the owner's request to retain duplicate
-pen-up commands and delays. Both earlier versions remain available. The original
-uploaded variant is preserved in Git history at commit `49e549d`.
+pen-up commands and delays. Only the current final CPS is kept in this folder.
+Earlier revisions remain recoverable from Git history, including `49e549d`.
 
 The current final revision adds `gMotionModal.reset()` before parking, plus
 `writePenUp()` before section initial positioning and emitted XY moves in
@@ -41,41 +41,12 @@ X4, Y4 and F2000, including after drawing at work X4/Y4 with nonzero offsets.
 Check physical pen clearance and parking before marking this revision proven.
 No firmware or UGS settings change is required.
 
-## Forced-XY candidate revision
-
-The separately supplied [forced-XY post](grbl_pen_plotter_return_home_forced_xy.cps)
-was added on 2026-09-18, unchanged from the supplied file. The original
-[proven post](grbl_pen_plotter_return_home.cps) remains available unchanged.
-
-Source comparison found only a comment update and the following addition inside
-`writeProgramEnd()`, immediately before `forceFeed()` and the G53 parking line:
-
-```javascript
-xOutput.reset();
-yOutput.reset();
-```
-
-This resets the coordinate output caches so both X4 and Y4 are emitted even if
-the last work-coordinate move used the same numeric values. Pen-up/dwell, feed
-2000, M30 and all other code are unchanged. `gMotionModal` is not reset, so G1
-may still be omitted if already active; that is valid modal G-code. The existing
-millimeter-only parking assumption remains.
-
-Status: source-reviewed candidate, not yet reported as Fusion-posted or
-bench-tested. Validate generated endings for paths terminating at work X4,
-work Y4, and work X4/Y4 with nonzero G54 offsets. Verify both X4 and Y4 appear
-on the final G53 line, G1 is explicit or already active, and M5 plus the configured
-lift dwell precede parking. Then verify physical parking with clearance before
-promoting this revision to the proven reference. No firmware update is required.
-
-The remaining sections describe the original owner-proven reference; its
-omitted-axis limitation is addressed by both newer candidate revisions.
-
 ## Configuration responsibilities and evidence
 
 This is an owner-reported working Fusion post-processing example, added 2026-09-18.
 It was inspected as source here; Fusion was not run and no new machine execution
-was performed as part of this import. The `.cps` is unchanged.
+was performed as part of the import. Later source changes are described above;
+the latest pre-rapid lift still requires Fusion output and physical validation.
 
 The machine does not need to have all of its physical configuration encoded in
 Fusion's post or a Fusion machine definition. For this machine, runtime controller
@@ -107,18 +78,15 @@ Changing the post does not configure the controller's travel or calibration.
 - `onCommand()` maps jet power ON to M3 and power OFF to the pen-up sequence.
 - `writeProgramEnd()` requests machine X4/Y4 at feed 2000 and then M30.
   These numeric parking values are not converted from millimeters for inch output;
-  use millimeters for this unchanged example.
-- Parking uses modal `xOutput`/`yOutput` formatting without explicitly forcing both
-  words. If a previous work-coordinate value equals 4, an axis word can be omitted
-  even though the G53 machine target differs. Inspect the generated final line:
-  both X4 and Y4 must be present when both axes need repositioning. This import
-  does not fix or expand the validated scope of the working source.
+  use millimeters for this post.
+- Parking resets X/Y and motion output caches and forces feed output, so the
+  final line explicitly includes G53 G1 X4 Y4 F2000.
 - Legacy milling/multi-axis handlers remain in the file. Their presence does not
   establish compatibility with this XY-only firmware.
 - The drawing arc below was corrected in this documentation to use equal start/end
   radii. All snippets are examples and assume appropriate units, modes and clearance.
 
-Post SHA-256: `89f9a8689beabdd82384cd86e0b5480c67fea8d8faf9a12220d1d41af2b85737`.
+Current post SHA-256: `b8b4d641cc3d7cadaf480321e57c2b9fbcfae8a90a989e75b3763b9bb2e6bfc9`.
 
 ---
 
@@ -126,7 +94,7 @@ Post SHA-256: `89f9a8689beabdd82384cd86e0b5480c67fea8d8faf9a12220d1d41af2b85737`
 
 This section contains a **known-good post-processing reference** for the pen plotter.
 
-The included Fusion 360 `.cps` post processor represents a configuration that has been physically tested on the machine and has produced correct plotter behavior. It is kept here so future software, Jetson Nano code, alternate CAM/post-processing tools, or other developers can see exactly what a successful G-code output sequence should look like.
+The original Fusion 360 post was reported physically tested by the owner. The included `.cps` contains subsequent improvements; see the validation status above. It is kept here so future software, Jetson Nano code, alternate CAM/post-processing tools, or other developers can see exactly what a successful G-code output sequence should look like.
 
 This section is intended as a **reference implementation**, not the only permitted way to generate G-code.
 
@@ -328,7 +296,7 @@ No Z-axis motion is required for pen control.
 
 ## Repository contents
 
-- [Working Fusion post](grbl_pen_plotter_return_home.cps): byte-for-byte copy of the owner-supplied `.cps`; only the filename was simplified.
+- [Current Fusion post](grbl_pen_plotter_final.cps): the maintained revision with explicit parking and pre-rapid pen lifts. Older CPS files were removed from the current tree to avoid selection mistakes; Git retains their history.
 - This document: adapted from the supplied `PROVEN_POST_PROCESSING_SAMPLE.md`.
 - No generated `.nc` file was supplied with this addition. The snippets here are illustrative, not a captured execution log.
 
