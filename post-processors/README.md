@@ -7,16 +7,32 @@
 pen-up commands and delays. Both earlier versions remain available. The original
 uploaded variant is preserved in Git history at commit `49e549d`.
 
-The current final revision differs from the forced-XY post only by adding
-`gMotionModal.reset()` before parking. X/Y resets and forced feed output remain,
+The current final revision adds `gMotionModal.reset()` before parking, plus
+`writePenUp()` before section initial positioning and emitted XY moves in
+`onRapid()`. Initial section positioning has its own output path, so both paths
+are covered. X/Y resets and forced feed output remain,
 so millimeter output ends with explicit `G53 G1 X4 Y4 F2000`.
 
 Every call to `writePenUp()` emits M5 and the configured dwell (default 200 ms;
 zero disables the dwell). No `penIsUp` flag or cross-file pen-state cache remains.
 Repeated lifts and waits at the end of a cut and before final parking are
 intentional: each requested lift is explicitly represented in the output.
-This does not by itself guarantee that every split file starts with a lift;
-inspect each standalone file's startup sequence before running it.
+Each section now requests a lift before its initial positioning, including
+sections in split files. Inspect each standalone file's startup sequence before
+running it; legacy multi-axis handlers remain outside the supported 2D workflow.
+
+Expected initial travel sequence (modal lines may precede it):
+
+```gcode
+M5
+G4 P0.2
+G0 X14 Y14
+M3
+```
+
+The initial lift/dwell is new in this revision. Previously supplied Verification 3
+output confirmed repeated final lifts and explicit G1 parking, but did not contain
+this startup lift. Regenerate the program with this updated repository copy.
 
 Status: source-reviewed, Fusion output and bench validation pending. Use the
 intended 2D jet workflow and millimeter output. Verify repeated lift requests

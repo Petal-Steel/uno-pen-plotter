@@ -361,6 +361,7 @@ function onSection() {
   // prepositioning
   var initialPosition = getFramePosition(currentSection.getInitialPosition());
   var isRequired = insertToolCall || state.retractedZ || !state.lengthCompensationActive  || (!isFirstSection() && getPreviousSection().isMultiAxis());
+  writePenUp(); // Initial positioning bypasses onRapid(); lift before section travel.
   writeInitialPositioning(initialPosition, isRequired);
 }
 
@@ -1895,6 +1896,9 @@ function onRapid(_x, _y, _z) {
     if (pendingRadiusCompensation >= 0) {
       error(localize("Radius compensation mode cannot be changed at rapid traversal."));
       return;
+    }
+    if (x || y) {
+      writePenUp(); // Retain explicit lift and settling dwell before XY rapid travel.
     }
     writeBlock(gMotionModal.format(0), x, y, z);
     forceFeed();
