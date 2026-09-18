@@ -15,6 +15,9 @@ Hard-limit instantaneous state checking is enabled (not timed debounce).
 See the [machine settings reference](docs/MACHINE-SETTINGS.md).
 For the machine overview, operating sequence, and intended Jetson supervisor
 behavior, read [Machine Context and Control Procedure](docs/MACHINE-CONTEXT-AND-CONTROL-PROCEDURE.md).
+See the [proven Fusion post-processing example](post-processors/README.md) for
+the owner-supplied working `.cps`, output conventions, and the distinction between
+post processing and controller settings configured afterward through UGS.
 
 Earlier verification: [code review, fixes and clean-build results](docs/CODE-REVIEW.md).
 
