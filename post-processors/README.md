@@ -1,5 +1,39 @@
 # Proven Post Processing Sample
 
+## Latest supplied revision: explicit G1 and deduplicated pen lift
+
+[grbl_pen_plotter_final.cps](grbl_pen_plotter_final.cps) was supplied on
+2026-09-18 and preserved unchanged. The filename is the owner's revision name;
+this revision is source-reviewed, with Fusion output and bench validation pending.
+Both earlier versions remain available.
+
+Compared with the forced-XY revision, this version:
+
+- Retains X/Y output resets and adds `gMotionModal.reset()` before parking,
+  forcing explicit `G53 G1 X4 Y4 F2000` in millimeter output.
+- Initializes `penIsUp = false` so the first requested lift is emitted.
+- Sets the flag after `writePenUp()` emits M5 and the configured dwell; repeated
+  lift requests return without another M5/dwell.
+- Clears the flag when `COMMAND_POWER_ON` emits M3, allowing the next lift.
+
+The 200 ms default dwell is unchanged; redundant dwell blocks are removed, not
+shortened. If the last path already lifted the pen, parking need not have another
+M5/dwell immediately before it. This is generated-command tracking, not physical
+servo feedback.
+
+Use the intended 2D jet workflow, millimeter output and `Split file = No splitting`
+for validation. The flag is not reset when opening a new split output file and
+does not track the legacy `COMMAND_START_SPINDLE` handler. Separate-file startup,
+optional/skipped sections, and legacy milling commands require additional review;
+do not assume the flag reflects commands that were skipped or not executed.
+
+Validation checklist: first lift emits M5/dwell; a repeated lift is suppressed;
+M3 followed by a lift emits M5/dwell again; and endings after either G0 or G1,
+including work X4/Y4 with nonzero work offsets, contain explicit G53 G1 X4 Y4 F2000.
+Verify generated output in Fusion and physical pen clearance/parking before
+designating this revision as bench-proven. No firmware or UGS setting change is
+required by this post revision.
+
 ## Forced-XY candidate revision
 
 The separately supplied [forced-XY post](grbl_pen_plotter_return_home_forced_xy.cps)
@@ -28,7 +62,7 @@ lift dwell precede parking. Then verify physical parking with clearance before
 promoting this revision to the proven reference. No firmware update is required.
 
 The remaining sections describe the original owner-proven reference; its
-omitted-axis limitation is addressed by this candidate only.
+omitted-axis limitation is addressed by both newer candidate revisions.
 
 ## Configuration responsibilities and evidence
 
