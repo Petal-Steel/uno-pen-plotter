@@ -1,38 +1,29 @@
 # Proven Post Processing Sample
 
-## Latest supplied revision: explicit G1 and deduplicated pen lift
+## Latest revision: explicit G1 with repeated pen lifts retained
 
 [grbl_pen_plotter_final.cps](grbl_pen_plotter_final.cps) was supplied on
-2026-09-18 and preserved unchanged. The filename is the owner's revision name;
-this revision is source-reviewed, with Fusion output and bench validation pending.
-Both earlier versions remain available.
+2026-09-18 and subsequently adjusted at the owner's request to retain duplicate
+pen-up commands and delays. Both earlier versions remain available. The original
+uploaded variant is preserved in Git history at commit `49e549d`.
 
-Compared with the forced-XY revision, this version:
+The current final revision differs from the forced-XY post only by adding
+`gMotionModal.reset()` before parking. X/Y resets and forced feed output remain,
+so millimeter output ends with explicit `G53 G1 X4 Y4 F2000`.
 
-- Retains X/Y output resets and adds `gMotionModal.reset()` before parking,
-  forcing explicit `G53 G1 X4 Y4 F2000` in millimeter output.
-- Initializes `penIsUp = false` so the first requested lift is emitted.
-- Sets the flag after `writePenUp()` emits M5 and the configured dwell; repeated
-  lift requests return without another M5/dwell.
-- Clears the flag when `COMMAND_POWER_ON` emits M3, allowing the next lift.
+Every call to `writePenUp()` emits M5 and the configured dwell (default 200 ms;
+zero disables the dwell). No `penIsUp` flag or cross-file pen-state cache remains.
+Repeated lifts and waits at the end of a cut and before final parking are
+intentional: each requested lift is explicitly represented in the output.
+This does not by itself guarantee that every split file starts with a lift;
+inspect each standalone file's startup sequence before running it.
 
-The 200 ms default dwell is unchanged; redundant dwell blocks are removed, not
-shortened. If the last path already lifted the pen, parking need not have another
-M5/dwell immediately before it. This is generated-command tracking, not physical
-servo feedback.
-
-Use the intended 2D jet workflow, millimeter output and `Split file = No splitting`
-for validation. The flag is not reset when opening a new split output file and
-does not track the legacy `COMMAND_START_SPINDLE` handler. Separate-file startup,
-optional/skipped sections, and legacy milling commands require additional review;
-do not assume the flag reflects commands that were skipped or not executed.
-
-Validation checklist: first lift emits M5/dwell; a repeated lift is suppressed;
-M3 followed by a lift emits M5/dwell again; and endings after either G0 or G1,
-including work X4/Y4 with nonzero work offsets, contain explicit G53 G1 X4 Y4 F2000.
-Verify generated output in Fusion and physical pen clearance/parking before
-designating this revision as bench-proven. No firmware or UGS setting change is
-required by this post revision.
+Status: source-reviewed, Fusion output and bench validation pending. Use the
+intended 2D jet workflow and millimeter output. Verify repeated lift requests
+produce repeated M5/dwell blocks and the final G53 line always contains G1,
+X4, Y4 and F2000, including after drawing at work X4/Y4 with nonzero offsets.
+Check physical pen clearance and parking before marking this revision proven.
+No firmware or UGS settings change is required.
 
 ## Forced-XY candidate revision
 

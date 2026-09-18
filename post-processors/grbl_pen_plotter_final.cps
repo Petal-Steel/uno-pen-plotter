@@ -462,28 +462,18 @@ var mapCommand = {
   COMMAND_STOP_SPINDLE            : 5
 };
 
-// Track pen state so Fusion's normal end-of-cut power-off and the final
-// program-end safety stop do not emit duplicate M5 + dwell blocks.
-// Start false so the first requested pen-up is always physically commanded.
-var penIsUp = false;
-
 function writePenUp() {
-  if (penIsUp) {
-    return;
-  }
   writeBlock(mFormat.format(5)); // pen up
   var delayMs = getProperty("penLiftDelayMs");
   if (delayMs > 0) {
     writeBlock(gFormat.format(4), "P" + xyzFormat.format(delayMs / 1000.0)); // dwell in seconds
   }
-  penIsUp = true;
 }
 
 function onCommand(command) {
   // Pen plotter: Fusion jet/plasma power state controls the pen servo.
   if (command == COMMAND_POWER_ON) {
     writeBlock(mFormat.format(3)); // pen down
-    penIsUp = false;
     return;
   }
   if (command == COMMAND_POWER_OFF || command == COMMAND_STOP_SPINDLE) {
