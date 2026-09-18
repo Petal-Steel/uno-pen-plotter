@@ -1,4 +1,4 @@
-(Verification 3)
+(Pen Plotter Verification)
 (T1 D=0 CR=0 - ZMIN=0 - plasma cutter)
 G90 G94
 G17
@@ -8,6 +8,8 @@ G21
 T1
 G17 G90 G94
 G54
+M5
+G4 P0.2
 G0 X14 Y14
 M3
 G1 X4 F5000

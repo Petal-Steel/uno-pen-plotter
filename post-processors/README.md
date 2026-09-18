@@ -30,11 +30,12 @@ G0 X14 Y14
 M3
 ```
 
-The initial lift/dwell is new in this revision. Previously supplied Verification 3
-output confirmed repeated final lifts and explicit G1 parking, but did not contain
-this startup lift. Regenerate the program with this updated repository copy.
+The latest owner-supplied [verification output](samples/pen-plotter-verification.nc)
+confirms the initial M5/dwell before G0, repeated final lifts and explicit G1 parking.
+It replaces the older Verification 3 example as the current repository sample.
 
-Status: source-reviewed, Fusion output and bench validation pending. Use the
+Status: source-reviewed, with owner-supplied Fusion output confirming this example;
+physical execution of this specific sample remains unconfirmed. Use the
 intended 2D jet workflow and millimeter output. Verify repeated lift requests
 produce repeated M5/dwell blocks and the final G53 line always contains G1,
 X4, Y4 and F2000, including after drawing at work X4/Y4 with nonzero offsets.
@@ -46,7 +47,8 @@ No firmware or UGS settings change is required.
 This is an owner-reported working Fusion post-processing example, added 2026-09-18.
 It was inspected as source here; Fusion was not run and no new machine execution
 was performed as part of the import. Later source changes are described above;
-the latest pre-rapid lift still requires Fusion output and physical validation.
+the latest supplied Fusion output includes the pre-rapid lift. Physical validation
+of this specific sample has not been reported.
 
 The machine does not need to have all of its physical configuration encoded in
 Fusion's post or a Fusion machine definition. For this machine, runtime controller
@@ -298,14 +300,12 @@ No Z-axis motion is required for pen control.
 
 - [Current Fusion post](grbl_pen_plotter_final.cps): the maintained revision with explicit parking and pre-rapid pen lifts. Older CPS files were removed from the current tree to avoid selection mistakes; Git retains their history.
 - This document: adapted from the supplied `PROVEN_POST_PROCESSING_SAMPLE.md`.
-- [Verification 3 G-code](samples/verification-3.nc): owner-supplied Fusion output,
-  preserved as provided. It demonstrates repeated M5/dwell blocks and explicit
-  `G53 G1 X4 Y4 F2000` parking. This sample predates the pre-rapid pen-lift addition
-  in commit `32679c2`, so it has no M5/dwell before its initial G0. The pen must
-  already be raised before running this historical sample. Home first and verify
-  G54 and clearance; these are work-coordinate drawing moves followed by machine
-  coordinate parking. Physical execution of this specific sample has not been
-  confirmed. Regenerating with the current post should add the initial lift/dwell.
+- [Pen Plotter Verification G-code](samples/pen-plotter-verification.nc): latest
+  owner-supplied Fusion output, preserved as provided. It includes M5 and a 200 ms
+  dwell before the first rapid, repeated final M5/dwell blocks, and explicit
+  `G53 G1 X4 Y4 F2000` parking. Home first and verify G54 and clearance; drawing
+  moves use work coordinates while parking uses machine coordinates. Physical
+  execution of this specific sample has not been confirmed.
 
 The post retains its Autodesk copyright/legal notices. Its inclusion does not
 relicense it under the GRBL firmware's GPL license.
