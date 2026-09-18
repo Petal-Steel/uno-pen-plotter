@@ -8,8 +8,12 @@ specify intended supervisory behavior, not software implemented by this document
 Settings are a reference snapshot; verify the controller with `$$` rather than
 writing settings automatically. See [machine settings](MACHINE-SETTINGS.md),
 [pin map](PINMAP.md), and [positive XY coordinates](POSITIVE-XY.md).
-The Fusion post-processor behavior below is owner-supplied context; that external
-post processor is not included or independently verified by this document.
+The current [Fusion post processor](../post-processors/grbl_pen_plotter_final.cps)
+and [verification NC sample](../post-processors/samples/pen-plotter-verification.nc)
+are included in this repository. See the [post-processing guide](../post-processors/README.md)
+for current behavior and validation status. Pen-up commands include the configured
+lift dwell (default 200 ms), including before initial XY travel and final parking;
+short command examples below illustrate sequencing rather than exact full output.
 
 - Serial connection: 115200 baud, 8 data bits, no parity, 1 stop bit. Opening USB
   serial may reset the Uno. A connection to an already-running controller may not

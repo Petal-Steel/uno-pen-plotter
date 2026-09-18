@@ -5,7 +5,7 @@
 [grbl_pen_plotter_final.cps](grbl_pen_plotter_final.cps) was supplied on
 2026-09-18 and subsequently adjusted at the owner's request to retain duplicate
 pen-up commands and delays. Only the current final CPS is kept in this folder.
-Earlier revisions remain recoverable from Git history, including `49e549d`.
+Earlier revisions remain recoverable from Git history only.
 
 The current final revision adds `gMotionModal.reset()` before parking, plus
 `writePenUp()` before section initial positioning and emitted XY moves in
@@ -32,7 +32,7 @@ M3
 
 The latest owner-supplied [verification output](samples/pen-plotter-verification.nc)
 confirms the initial M5/dwell before G0, repeated final lifts and explicit G1 parking.
-It replaces the older Verification 3 example as the current repository sample.
+This is the sole current NC sample in the repository.
 
 Status: source-reviewed, with owner-supplied Fusion output confirming this example;
 physical execution of this specific sample remains unconfirmed. Use the
